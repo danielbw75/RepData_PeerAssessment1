@@ -1,17 +1,16 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
+title: "Reproductive Search - Data Science"
 author: "DBW"
-output: 
-  html_document:
-    keep_md: true
+date: "9 de julho de 2015"
+output: html_document
 ---
-
 ```{r, echo=TRUE}
 library(dplyr)
 library(ggplot2)
 
 ```
-## Loading and preprocessing the data
+
+##Loading and checking the data with the following code:
 checking the data frame
 ```{r, echo=TRUE}
 dataframe<-read.csv("activity.csv")
@@ -20,8 +19,7 @@ head(dataframe)
 tail(dataframe)
 ```
 
-
-## What is mean total number of steps taken per day?
+##What is the mean total number of steps taken per day?
 
 ###for this part, we can ignore the 'NAs', so we will use the whole dataframe
 First we will group the dataframe by date, then we will calculate the total steps by group (date)
@@ -43,9 +41,7 @@ mean(total$total_steps)
 median(total$total_steps)
 ```
 
-
-## What is the average daily activity pattern?
-
+##What is the average daily activity pattern?
 First we should group the dataframes by interval, then calculate the average of the groups (the intervals).
 ```{r, echo=TRUE}
 #calculating the average of steps in each interval, by day
@@ -62,8 +58,7 @@ subset(intervalmean,
        intervalmean$interval_mean==max(intervalmean$interval_mean))[,"interval"]
 ```
 
-
-## Imputing missing values
+##Imputing missing values
 ###we want the number of rows which have NA value in any of the columns of the dataframe
 first we should check for NA in each column and then subset the dataframe for the columns which have NA
 ```{r, echo=TRUE}
@@ -76,7 +71,8 @@ for(i in 1:ncol(dataframe)){
 subset(dataframe ,is.na(dataframe[,1]))%>%
 nrow
 ```
-###Devising a strategy to fill the missing values
+
+#Devising a strategy to fill the missing values
 We will use the corrected average of steps by interval:
 the correction is the product of the average of this interval by the percentage of the mean of that day compared with the median (50% of the values) of all the means.
 ```{r, echo=TRUE}
@@ -146,19 +142,16 @@ median(total_new$total_steps)
 ```
 ###Comparing values with NA and without NA
 
-```{r, echo=TRUE}
+```{r}
 #means
 paste("Clean Data Mean:",round(mean(total_new$total_steps), digits = 2),"vs raw data (with NA) Mean:", round(mean(total$total_steps),digits=2))
 
 #medians
 paste("Clean Data Median:",round(median(total_new$total_steps),digits = 2),"vs raw data (with NA) Median:", round(median(total$total_steps),digits = 2))
-```
 
-###Visualising the differences
-
-```{r, echo=TRUE}
-#making two histograms, one for clean data, one for raw data
+#making 2 histograms, with both medians marked
 par(mfrow=c(2,1),mar= c(4,1,1,1), oma=c(1,1,1,1))
+
 hist(total_new$total_steps, main = "Total steps frequency Cleaned", xlab="total steps", col="blue", breaks=15)
 abline(v=median(total_new$total_steps), col="green", lwd="4")
 abline(v=median(total$total_steps), col="magenta", lwd="4")
@@ -168,11 +161,9 @@ hist(total$total_steps, main = "Total steps frequency Raw (with NA)", xlab="tota
 abline(v=median(total_new$total_steps), col="green", lwd="4")
 abline(v=median(total$total_steps), col="magenta", lwd="4")
 legend("topright", lty=1, legend = c("clean median", "raw median"), col=c("green","magenta"), bty="n")
-
 ```
 
-## Are there differences in activity patterns between weekdays and weekends?
-
+##Differences in activity patterns between weekdays and weekends:
 we will first need to convert the dates to POSIXt format, than add the weekdays to the dataframe and than transform those weekdays to a new variable which differenatiaties between weekdays and weekends
 
 ```{r, echo=TRUE}
@@ -198,7 +189,7 @@ str(week_data)
 
 ##Making two panel time series of the 5-minutes interval and the average number of steps take, averaged across all weeday or weekend days
 
-we will need to group the data by interval and then by week part to plot the panels
+we will new to group the data by interval and then by week part to plot the panels
 
 ```{r, echo=TRUE}
 #putting the date back to character to use the group_by function
@@ -213,3 +204,4 @@ head(avg_week)
 ggplot(avg_week, aes (interval, steps))+facet_wrap(~week_part, ncol=1)+geom_line(aes(group=week_part), color = "blue")+ggtitle("Average of steps in the weekdays vs weekends")
 
 ```
+
